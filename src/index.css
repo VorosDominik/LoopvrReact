@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  font-family:
+    "Trebuchet MS",
+    "Arial Black",
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen text-stone-950 antialiased;
+  background-color: #2a1209;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 218, 103, 0.22), transparent 18rem),
+    radial-gradient(circle at 88% 8%, rgba(255, 106, 40, 0.18), transparent 16rem),
+    linear-gradient(180deg, #6c2d12 0%, #3a1a0d 44%, #1f0d07 100%),
+    repeating-linear-gradient(
+      -18deg,
+      rgba(255, 232, 172, 0.07) 0,
+      rgba(255, 232, 172, 0.07) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply rounded-3xl border border-red-500/40 bg-black/70 backdrop-blur-xl shadow-[0_30px_80px_rgba(255,0,0,0.16)];
+  }
+
+  .comic-title {
+    @apply tracking-[0.12em];
+    text-shadow:
+      3px 3px 0 #2a1209,
+      -1px -1px 0 #2a1209,
+      0 5px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  .red-accent {
+    @apply text-red-300;
+  }
+}

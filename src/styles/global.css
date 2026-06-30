@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #090305;
+  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(
+      circle at top left,
+      rgba(255, 55, 90, 0.08),
+      transparent 20%
+    ),
+    radial-gradient(circle at 80% 15%, rgba(255, 0, 30, 0.12), transparent 18%),
+    linear-gradient(180deg, #110308 0%, #0a0507 45%, #0b0507 100%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 0, 0, 0.02) 0,
+      rgba(255, 0, 0, 0.02) 2px,
+      transparent 2px,
+      transparent 6px
+    );
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.glass-panel {
+  border-radius: 2rem;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(17, 2, 4, 0.7);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 30px 80px rgba(255, 0, 0, 0.16);
+}
+
+.comic-title {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 0.1rem #f87171,
+    0 0 0.25rem rgba(248, 113, 113, 0.55);
+}
+
+.red-accent {
+  color: #fb7185;
+}

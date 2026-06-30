@@ -1,0 +1,36 @@
+.control-shell {
+  margin: 0 auto;
+  min-height: 100vh;
+  max-width: 72rem;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.control-header {
+  border-radius: 2rem;
+  border: 1px solid rgba(248, 113, 113, 0.38);
+  background: rgba(17, 2, 4, 0.7);
+  padding: 1.5rem;
+  box-shadow: 0 25px 75px rgba(255, 0, 0, 0.22);
+  backdrop-filter: blur(20px);
+}
+
+.control-title {
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  margin: 0;
+}
+
+.control-highlight {
+  color: #f87171;
+}
+
+.control-subtitle {
+  margin-top: 0.75rem;
+  max-width: 36rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
