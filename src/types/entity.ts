@@ -1,3 +1,4 @@
+import type{coordinate} from "./coordinate";
 export type Entity = {
   name: string;
   image: string;
@@ -6,6 +7,7 @@ export type Entity = {
   attack: number;
   armor: number;
   level: number;
+  position: coordinate;
 };
 export type Hero = Entity & {
   role: "hero";

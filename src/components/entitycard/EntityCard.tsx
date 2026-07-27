@@ -1,5 +1,5 @@
 import "./EntityCard.css";
-import type { Character } from "../../../types/entity";
+import type { Character } from "../../../src/types/entity";
 
 export default function EntityCard({ character }: { character: Character }) {
   const healthPercent = Math.max(
