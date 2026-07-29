@@ -2,7 +2,7 @@ import EntityCard from "../../components/entitycard/EntityCard";
 import PirateHero from "../../assets/PirateHero.jpg";
 import type { Hero, Enemy } from "../../types/entity";
 import StoneBoy from "../../assets/StoneBoy.jpeg";
-import Map from "./../../components/map/Map";
+import Map from "../../components/map/Map";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,9 +35,6 @@ const selectedEnemy: Enemy = {
   position: { x: 4, y: 3 },
 };
 
-const Player: Hero = selectedHero;
-const Monster: Enemy = selectedEnemy;
-
 const tiles: coordinate[] = [
   { x: 0, y: 0 },
   { x: 1, y: 0 },
@@ -55,167 +52,178 @@ const tiles: coordinate[] = [
   { x: 0, y: 1 },
 ];
 
+type Entities = {
+  Player: Hero;
+  Monster: Enemy;
+};
+
 export default function Battleground() {
   const [heroAlive, setHeroAlive] = useState(true);
   const [passive, setPassive] = useState(false);
-
-  // csak megjelenítéshez
   const [isBattle, setBattle] = useState(false);
-
-  // valódi harci kapcsoló !!
-  const battleRef = useRef(false);
-
   const [index, setIndex] = useState(0);
-  // legyen object majd
-  const [entitys, setEntitys] = useState<[Hero, Enemy]>([
-    { ...Player },
-    { ...Monster },
-  ]);
-  // ennek majd uűna nézek ref nek !!
-  function battle() {
-    if (!battleRef.current) {
-      return;
-    }
 
-    // HERO támadás
-    // majd keres jobb megoldást
-    setTimeout(() => {
+  const battleRef = useRef(false);
+  const battleTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const [entities, setEntities] = useState<Entities>({
+    Player: selectedHero,
+    Monster: selectedEnemy,
+  });
+  const clearBattleTimers = () => {
+    battleTimers.current.forEach((timer) => {
+      clearTimeout(timer);
+    });
+
+    battleTimers.current = [];
+  };
+
+  const move = (tileIndex: number) => {
+    setEntities((prev) => ({
+      ...prev,
+      Player: {
+        ...prev.Player,
+        position: tiles[tileIndex],
+      },
+    }));
+    console.log(tileIndex);
+  };
+  function battle() {
+    if (!battleRef.current) return;
+
+    const heroAttackTimer = setTimeout(() => {
       if (!battleRef.current) return;
 
-      setEntitys(([hero, enemy]) => {
+      setEntities((prev) => {
+        const hero = prev.Player;
+        const enemy = prev.Monster;
+
         const updatedEnemy = {
           ...enemy,
           health: attackActions(hero, enemy),
         };
 
-        console.log("Enemy HP:", updatedEnemy.health);
+        console.log("Hero támad:", updatedEnemy.health);
 
         if (updatedEnemy.health <= 0) {
-          toast("GG mehetsz tovább");
+          battleRef.current = false;
+          toast("mehetsz tovább GG");
 
           battleRef.current = false;
-          setBattle(false);
-          setPassive(false);
+          setTimeout(() => {
+            Reward();
+          }, 500);
 
-          return [
-            hero,
-            {
+          return {
+            Player: hero,
+            Monster: {
               ...updatedEnemy,
               health: 0,
             },
-          ];
+          };
         }
 
-        return [hero, updatedEnemy];
+        return {
+          Player: hero,
+          Monster: updatedEnemy,
+        };
       });
     }, 1000);
 
-    // ENEMY támadás
-    setTimeout(() => {
+    battleTimers.current.push(heroAttackTimer);
+
+    const enemyAttackTimer = setTimeout(() => {
       if (!battleRef.current) return;
 
-      setEntitys(([hero, enemy]) => {
+      setEntities((prev) => {
+        const hero = prev.Player;
+        const enemy = prev.Monster;
+
         const updatedHero = {
           ...hero,
           health: attackActions(enemy, hero),
         };
 
-        console.log("Hero HP:", updatedHero.health);
+        console.log("Enemy támad:", updatedHero.health);
 
         if (updatedHero.health <= 0) {
-          alert("Vesztettél");
-
           battleRef.current = false;
-          setBattle(false);
+          alert("ez faájdalmasnak tünt!");
           setHeroAlive(false);
 
-          return [
-            {
+          return {
+            Player: {
               ...updatedHero,
               health: 0,
             },
-            enemy,
-          ];
+            Monster: enemy,
+          };
+        }
+        // következő kör csak egyszer
+        if (battleRef.current) {
+          setTimeout(() => {
+            battle();
+          }, 500);
         }
 
-        return [updatedHero, enemy];
+        return {
+          Player: updatedHero,
+          Monster: enemy,
+        };
       });
-
-      // következő kör
-      if (battleRef.current) {
-        battle();
-      }
     }, 2200);
+
+    battleTimers.current.push(enemyAttackTimer);
+  }
+  function Reward() {
+    setIndex((prev) => {
+      const next = prev >= tiles.length - 1 ? 0 : prev + 1;
+
+      move(next);
+
+      return next;
+    });
   }
 
-  // Hős mozgás
   useEffect(() => {
-    if (!heroAlive || passive) {
-      return;
-    }
-
     const interval = setInterval(() => {
-      setIndex((prev) => {
-        if (prev >= tiles.length - 1) {
-          return 0;
+      if (battleRef.current == false) {
+        setIndex((prev) => (prev >= tiles.length - 1 ? 0 : prev + 1));
+      }
+      clearInterval(interval);
+      if (
+        entities.Player.position.x === entities.Monster.position.x &&
+        entities.Player.position.y == entities.Monster.position.y
+      ) {
+        //ez fontos vöröske
+        if (!battleRef.current) {
+          battleRef.current = true;
+          console.log("BATTLE START");
+          battle();
         }
-
-        return prev + 1;
-      });
+        //további események:
+      } else {
+        move(index);
+      }
     }, 1000);
+    console.log("meghivtuk");
+    console.log(isBattle);
 
     return () => clearInterval(interval);
-  }, [heroAlive, passive]);
-
-  // pozíció frissítés + találkozás
-  useEffect(() => {
-    const nextPosition = tiles[index];
-
-    const enemyPosition = entitys[1].position;
-
-    const collision =
-      nextPosition.x === enemyPosition.x && nextPosition.y === enemyPosition.y;
-
-    if (collision) {
-      setPassive(true);
-
-      setEntitys(([hero, enemy]) => [
-        {
-          ...hero,
-          position: nextPosition,
-        },
-        enemy,
-      ]);
-
-      battleRef.current = true;
-      setBattle(true);
-
-      battle();
-
-      return;
-    }
-
-    setEntitys(([hero, enemy]) => [
-      {
-        ...hero,
-        position: nextPosition,
-      },
-      enemy,
-    ]);
-  }, [index]);
+  }, [index, isBattle]);
 
   return (
     <section className="flex w-full flex-col gap-5">
       <div className="flex gap-5 lg:gap-8 items-start justify-center">
         <div className="flex-shrink-0 w-64">
-          <EntityCard character={entitys[0]} />
+          <EntityCard character={entities.Player} />
         </div>
 
-        <Map Player={entitys[0]} Monster={entitys[1]} />
+        <Map Player={entities.Player} Monster={entities.Monster} />
 
-        {isBattle && (
+        {battleRef.current == true && (
           <div className="flex-shrink-0 w-64">
-            <EntityCard character={entitys[1]} />
+            <EntityCard character={entities.Monster} />
           </div>
         )}
       </div>

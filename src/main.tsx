@@ -5,9 +5,9 @@ import "./index.css";
 import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+ //strict mode vissza ha nem a battle fügvényt szerelgeted mar !!
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </StrictMode>,
+  ,
 );
